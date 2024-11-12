@@ -9,7 +9,6 @@ import transactionRoutes from './Routers/Transactions.js';
 import userRoutes from './Routers/userRouter.js';
 import path from 'path';
 
-dotenv.config({ path: './config/config.env' });
 const app = express();
 
 const port = 8080;
@@ -17,7 +16,7 @@ const port = 8080;
 connectDB();
 
 const allowedOrigins = [
-  'http://localhost:3000',
+  process.env.allowedOrigins,
   // add more origins as needed
 ];
 
