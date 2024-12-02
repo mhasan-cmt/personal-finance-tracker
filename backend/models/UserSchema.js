@@ -1,8 +1,5 @@
 import mongoose from "mongoose";
 import validator from "validator";
-import jwt from "jsonwebtoken";
-import bcrypt from "bcrypt";
-
 // User Schema Model - (Name, email, password, creation Date) with validation rules
 const userSchema = new mongoose.Schema({
     name: {
@@ -12,36 +9,40 @@ const userSchema = new mongoose.Schema({
     email: {
         type: String,
         required: [true, "Email is required"],
-        unique : true,
-        validate : validator.isEmail,
+        unique: true,
+        validate: {
+            validator: (value) => validator.isEmail(value),
+            message: "Invalid email format"
+        },
     },
     password: {
         type: String,
         required: [true, "Password is required"],
-        minlength : [6, "Password Must Be Atleast 6 characters"],
+        minlength: [6, "Password Must Be Atleast 6 characters"],
     },
     isAvatarImageSet: {
         type: Boolean,
         default: false,
     },
-
     avatarImage: {
         type: String,
         default: ""
     },
     transactions: {
-        type: [],
+        type: [mongoose.Schema.Types.Mixed],
     },
-
+    role: {
+        type: String,
+        enum: ["user", "admin"],
+        default: "user",
+        required: [true, "Role is required"],
+    },
     createdAt: {
-        type:Date,
+        type: Date,
         default: Date.now,
     },
-
-    
-
 });
 
 const User = mongoose.model("User", userSchema);
 
-export default  User;
+export default User;

@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { Button, Modal, Form, Container } from "react-bootstrap";
 // import loading from "../../assets/loader.gif";
 import "./home.css";
-import { addTransaction, getTransactions } from "../../utils/ApiRequest";
+import { addTransaction, getTransactions, getCategories } from "../../utils/ApiRequest";
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -34,11 +34,15 @@ const Home = () => {
   const [loading, setLoading] = useState(false);
   const [transactions, setTransactions] = useState([]);
   const [refresh, setRefresh] = useState(false);
+  const [categories, setCategories] = useState([]);
   const [frequency, setFrequency] = useState("7");
   const [type, setType] = useState("all");
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [view, setView] = useState("table");
+  const [showCategory, setShowCategory] = useState(false);
+
+
 
   const handleStartChange = (date) => {
     setStartDate(date);
@@ -48,8 +52,27 @@ const Home = () => {
     setEndDate(date);
   };
 
+  const fetchCategories = async () => {
+    try {
+      const { data } = await axios.get(getCategories, {
+        params: { user: cUser._id }
+      });
+      console.log(data);
+      setCategories(data.length === 0 ? ['Unassigned'] : data);
+      if (data.length === 0) {
+        setCategories(['Unassigned']);
+      } else {
+        setCategories(data.categories);
+      }
+    } catch (err) {
+      setCategories(['Unassigned']);
+    }
+  };
+
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
+  const handleCloseCategory = () => setShowCategory(false);
+  const handleShowCategory = () => setShowCategory(true);
 
   useEffect(() => {
     const avatarFunc = async () => {
@@ -68,6 +91,7 @@ const Home = () => {
     };
 
     avatarFunc();
+    fetchCategories();
   }, [navigate]);
 
   const [values, setValues] = useState({
@@ -79,8 +103,14 @@ const Home = () => {
     transactionType: "",
   });
 
+  const [categoryName, setCategoryName] = useState("");
+
   const handleChange = (e) => {
     setValues({ ...values, [e.target.name]: e.target.value });
+  };
+
+  const handleCategoryChange = (e) => {
+    setCategoryName(e.target.value);
   };
 
   const handleChangeFrequency = (e) => {
@@ -122,6 +152,14 @@ const Home = () => {
     if (data.success === true) {
       toast.success(data.message, toastOptions);
       handleClose();
+      setValues({
+        title: "",
+        amount: "",
+        description: "",
+        category: "",
+        date: "",
+        transactionType: "",
+      });
       setRefresh(!refresh);
     } else {
       toast.error(data.message, toastOptions);
@@ -166,7 +204,7 @@ const Home = () => {
     };
 
     fetchAllTransactions();
-  }, [refresh, frequency, endDate, type, startDate]);
+  }, [refresh, frequency,categories, endDate, type, startDate, cUser?._id]);
 
   const handleTableClick = (e) => {
     setView("table");
@@ -174,6 +212,32 @@ const Home = () => {
 
   const handleChartClick = (e) => {
     setView("chart");
+  };
+  const handleCategorySubmit = async (e) => {
+    e.preventDefault();
+    if (!categoryName) {
+      toast.error("Please enter a category name", toastOptions);
+      return;
+    }
+    try {
+      const { data } = await axios.post(getCategories, { name: categoryName, user: cUser });
+      if (data.success) {
+        toast.success(data.message, toastOptions);
+        setShowCategory(false);
+        setCategoryName("");
+        handleCloseCategory();
+        await fetchCategories();
+        console.log("category created")
+      } else {
+        toast.error(data.message, toastOptions);
+      }
+    } catch (err) {
+      if (err.response.data.message){
+        toast.error(err.response.data.message, toastOptions);
+      }else{
+      toast.error("Error please Try again...", toastOptions);
+      }
+    }
   };
 
   return (
@@ -240,8 +304,11 @@ const Home = () => {
               </div>
 
               <div>
-                <Button onClick={handleShow} className="addNew">
+                <Button onClick={handleShow} className="addNew" style={{ marginRight: "10px" }} >
                   Add New
+                </Button>
+                <Button onClick={handleShowCategory} className="addCategory">
+                  Add Category
                 </Button>
                 <Button onClick={handleShow} className="mobileBtn">
                   +
@@ -277,21 +344,14 @@ const Home = () => {
                       <Form.Group className="mb-3" controlId="formSelect">
                         <Form.Label>Category</Form.Label>
                         <Form.Select
-                          name="category"
-                          value={values.category}
-                          onChange={handleChange}
-                        >
-                          <option value="">Choose...</option>
-                          <option value="Groceries">Groceries</option>
-                          <option value="Rent">Rent</option>
-                          <option value="Salary">Salary</option>
-                          <option value="Tip">Tip</option>
-                          <option value="Food">Food</option>
-                          <option value="Medical">Medical</option>
-                          <option value="Utilities">Utilities</option>
-                          <option value="Entertainment">Entertainment</option>
-                          <option value="Transportation">Transportation</option>
-                          <option value="Other">Other</option>
+                            name="category"
+                            value={values.category}
+                            onChange={handleChange}
+                        >{categories.map((category) => (
+                            <option key={category._id} value={category._id}>
+                              {category.name}
+                            </option>
+                        ))}
                         </Form.Select>
                       </Form.Group>
 
@@ -337,6 +397,33 @@ const Home = () => {
                       Close
                     </Button>
                     <Button variant="primary" onClick={handleSubmit}>
+                      Submit
+                    </Button>
+                  </Modal.Footer>
+                </Modal>
+                <Modal show={showCategory} onHide={handleCloseCategory} centered>
+                  <Modal.Header closeButton>
+                    <Modal.Title>Add Category</Modal.Title>
+                  </Modal.Header>
+                  <Modal.Body>
+                    <Form>
+                      <Form.Group className="mb-3" controlId="formCategoryName">
+                        <Form.Label>Category Name</Form.Label>
+                        <Form.Control
+                            name="categoryName"
+                            type="text"
+                            placeholder="Enter Category Name"
+                            value={categoryName}
+                            onChange={handleCategoryChange}
+                        />
+                      </Form.Group>
+                    </Form>
+                  </Modal.Body>
+                  <Modal.Footer>
+                    <Button variant="secondary" onClick={handleCloseCategory}>
+                      Close
+                    </Button>
+                    <Button variant="primary" onClick={handleCategorySubmit}>
                       Submit
                     </Button>
                   </Modal.Footer>
