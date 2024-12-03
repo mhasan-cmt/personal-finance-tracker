@@ -18,9 +18,11 @@ const ModelForm = ({transaction, onClose, isShow}) => {
 
   });
 
+
   const handleChange = (e) => {
     setValues({...values , [e.target.name]: e.target.value});
   }
+
 
 
   const handleClose = () => {setShow(false)};
@@ -68,11 +70,6 @@ const ModelForm = ({transaction, onClose, isShow}) => {
               >
                 <option value="">Choose...</option>
                 <option value="groceries">Groceries</option>
-                <option value="rent">Rent</option>
-                <option value="rent">Salary</option>
-                <option value="rent">Tip</option>
-                <option value="rent">Food</option>
-                <option value="rent">Medical</option>
                 <option value="utilities">Utilities</option>
                 <option value="entertainment">Entertainment</option>
                 <option value="transportation">Transportation</option>

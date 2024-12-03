@@ -2,21 +2,21 @@ import User from "../models/UserSchema.js";
 import bcrypt from "bcrypt";
 
 export const registerControllers = async (req, res, next) => {
-    try{
+    try {
         const {name, email, password} = req.body;
 
         // console.log(name, email, password);
 
-        if(!name || !email || !password){
+        if (!name || !email || !password) {
             return res.status(400).json({
                 success: false,
                 message: "Please enter All Fields",
-            }) 
+            })
         }
 
         let user = await User.findOne({email});
 
-        if(user){
+        if (user) {
             return res.status(409).json({
                 success: false,
                 message: "User already Exists",
@@ -30,9 +30,9 @@ export const registerControllers = async (req, res, next) => {
         // console.log(hashedPassword);
 
         let newUser = await User.create({
-            name, 
-            email, 
-            password: hashedPassword, 
+            name,
+            email,
+            password: hashedPassword,
         });
 
         return res.status(200).json({
@@ -40,8 +40,7 @@ export const registerControllers = async (req, res, next) => {
             message: "User Created Successfully",
             user: newUser
         });
-    }
-    catch(err){
+    } catch (err) {
         return res.status(500).json({
             success: false,
             message: err.message,
@@ -50,34 +49,34 @@ export const registerControllers = async (req, res, next) => {
 
 }
 export const loginControllers = async (req, res, next) => {
-    try{
-        const { email, password } = req.body;
+    try {
+        const {email, password} = req.body;
 
         // console.log(email, password);
-  
-        if (!email || !password){
+
+        if (!email || !password) {
             return res.status(400).json({
                 success: false,
                 message: "Please enter All Fields",
-            }); 
+            });
         }
-    
-        const user = await User.findOne({ email });
-    
-        if (!user){
+
+        const user = await User.findOne({email});
+
+        if (!user) {
             return res.status(401).json({
                 success: false,
                 message: "User not found",
-            }); 
+            });
         }
-    
+
         const isMatch = await bcrypt.compare(password, user.password);
-    
-        if (!isMatch){
+
+        if (!isMatch) {
             return res.status(401).json({
                 success: false,
                 message: "Incorrect Email or Password",
-            }); 
+            });
         }
 
         delete user.password;
@@ -88,8 +87,7 @@ export const loginControllers = async (req, res, next) => {
             user,
         });
 
-    }
-    catch(err){
+    } catch (err) {
         return res.status(500).json({
             success: false,
             message: err.message,
@@ -97,32 +95,32 @@ export const loginControllers = async (req, res, next) => {
     }
 }
 
-export const setAvatarController = async (req, res, next)=> {
-    try{
+export const setAvatarController = async (req, res, next) => {
+    try {
 
         const userId = req.params.id;
-       
+
         const imageData = req.body.image;
-      
+
         const userData = await User.findByIdAndUpdate(userId, {
-            isAvatarImageSet: true,
-            avatarImage: imageData,
-        },
-        { new: true });
+                isAvatarImageSet: true,
+                avatarImage: imageData,
+            },
+            {new: true});
 
         return res.status(200).json({
             isSet: userData.isAvatarImageSet,
             image: userData.avatarImage,
-          });
+        });
 
 
-    }catch(err){
+    } catch (err) {
         next(err);
     }
 }
 
 export const allUsers = async (req, res, next) => {
-    try{
+    try {
         const user = await User.find({_id: {$ne: req.params.id}}).select([
             "email",
             "username",
@@ -131,8 +129,7 @@ export const allUsers = async (req, res, next) => {
         ]);
 
         return res.json(user);
-    }
-    catch(err){
+    } catch (err) {
         next(err);
     }
 }
