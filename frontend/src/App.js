@@ -7,23 +7,26 @@ import Register from './Pages/Auth/Register';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Home from './Pages/Home/Home';
 import SetAvatar from './Pages/Avatar/setAvatar';
-
+import ManageTripCost from "./Pages/Trips/ManageTripCost";
+import NotFoundPage from "./Pages/error/NotFoundPage";
 
 
 const App = () => {
-  return (
-    
-      <div className="App">
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/setAvatar" element={<SetAvatar />} />
-        </Routes>
-      </BrowserRouter>
-      </div>
-  )
+    return (
+
+        <div className="App">
+            <BrowserRouter>
+                <Routes>
+                    <Route path="/" element={<Home/>}/>
+                    <Route path="/login" element={<Login/>}/>
+                    <Route path="/register" element={<Register/>}/>
+                    <Route path="/setAvatar" element={<SetAvatar/>}/>
+                    <Route path="/trips" element={<ManageTripCost/>}/>
+                    <Route path="*" element={<NotFoundPage/>}/>
+                </Routes>
+            </BrowserRouter>
+        </div>
+    )
 }
 
 export default App

@@ -12,7 +12,6 @@ import AssessmentIcon from '@mui/icons-material/Assessment';
 const TableData = (props) => {
     const [show, setShow] = useState(false);
     const [transactions, setTransactions] = useState([]);
-    // const [loading, setLoading] = useState(false);
     const [editingTransaction, setEditingTransaction] = useState(null);
     const [currId, setCurrId] = useState(null);
     const [refresh, setRefresh] = useState(false);
@@ -20,7 +19,6 @@ const TableData = (props) => {
     const [categories, setCategories] = useState([]);
 
     const handleEditClick = (itemKey) => {
-        // const buttonId = e.target.id;
         console.log("Clicked button ID:", itemKey);
         if (transactions.length > 0) {
             const editTran = props.data.filter((item) => item._id === itemKey);
@@ -60,8 +58,6 @@ const TableData = (props) => {
     }, [user]);
 
     const handleEditSubmit = async (e) => {
-        // e.preventDefault();
-
         const {data} = await axios.put(`${editTransactions}/${currId}`, {
             ...values,
         });

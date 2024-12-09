@@ -155,7 +155,7 @@ const Login = () => {
               <AccountBalanceWalletIcon
                 sx={{ fontSize: 40, color: "white" }}
                 className="text-center"
-              />
+              /> <span className="text-light">Finance Tracking System</span>
             </h1>
             <h2 className="text-white text-center ">Login</h2>
             <Form>

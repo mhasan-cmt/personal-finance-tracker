@@ -161,6 +161,9 @@ const Home = () => {
 
 
     useEffect(() => {
+        if (!cUser || !cUser._id) {
+            return;
+        }
 
         const fetchAllTransactions = async () => {
             try {
@@ -168,14 +171,14 @@ const Home = () => {
                     userId: cUser._id, frequency: frequency, startDate: startDate, endDate: endDate, type: type,
                 });
                 setTransactions(data.transactions);
-
             } catch (err) {
+                console.log(err);
                 toast.error("Error please Try again...", toastOptions);
             }
         };
 
         fetchAllTransactions();
-    }, [refresh, frequency, categories, endDate, type, startDate, cUser?._id]);
+    }, [refresh, frequency, categories, endDate, type, startDate, cUser]);
 
     const handleTableClick = (e) => {
         setView("table");
@@ -265,7 +268,7 @@ const Home = () => {
                     </div>
 
                     <div>
-                        <Button onClick={handleShow} className="addNew" style={{marginRight: "10px"}}>
+                        <Button className="addNew" style={{marginRight: "10px"}} onClick={() => navigate("/trips")}>
                             Trips
                             <LocalAirportIcon className={"ms-2"}/>
                         </Button>

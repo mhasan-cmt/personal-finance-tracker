@@ -8,3 +8,7 @@ export const getTransactions = `${host}/api/v1/getTransaction`;
 export const editTransactions = `${host}/api/v1/updateTransaction`;
 export const deleteTransactions = `${host}/api/v1/deleteTransaction`;
 export const getCategories = `${host}/api/categories`;
+export const getTrips = `${host}/api/trips`;
+export const addTrip = `${host}/api/trips`;
+export const updateTrip = `${host}/api/trips`;
+export const deleteTrip = `${host}/api/trips`;

@@ -6,8 +6,8 @@ import helmet from 'helmet';
 import morgan from 'morgan';
 import transactionRoutes from './Routers/Transactions.js';
 import userRoutes from './Routers/userRouter.js';
-import dotenv from "dotenv";
 import categoryRouter from "./Routers/categoryRouter.js";
+import tripRouter from "./Routers/tripRouter.js";
 
 const app = express();
 
@@ -38,6 +38,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use('/api/v1', transactionRoutes);
 app.use('/api/auth', userRoutes);
 app.use('/api/categories', categoryRouter);
+app.use('/api/trips', tripRouter);
 
 app.get('/', (req, res) => {
   res.send('Hello World!');
