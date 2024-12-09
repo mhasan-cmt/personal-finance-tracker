@@ -128,7 +128,6 @@ const Home = () => {
             toast.error("Please enter all the fields", toastOptions);
             return;
         }
-        setLoading(true);
 
         const {data} = await axios.post(addTransaction, {
             title: title,
@@ -151,7 +150,6 @@ const Home = () => {
             toast.error(data.message, toastOptions);
         }
 
-        setLoading(false);
     };
 
     const handleReset = () => {
@@ -166,16 +164,13 @@ const Home = () => {
 
         const fetchAllTransactions = async () => {
             try {
-                setLoading(true);
                 const {data} = await axios.post(getTransactions, {
                     userId: cUser._id, frequency: frequency, startDate: startDate, endDate: endDate, type: type,
                 });
                 setTransactions(data.transactions);
 
-                setLoading(false);
             } catch (err) {
-                // toast.error("Error please Try again...", toastOptions);
-                setLoading(false);
+                toast.error("Error please Try again...", toastOptions);
             }
         };
 
@@ -199,9 +194,7 @@ const Home = () => {
             const {data} = await axios.post(getCategories, {name: categoryName, user: cUser});
             if (data.success) {
                 toast.success(data.message, toastOptions);
-                setShowCategory(false);
                 setCategoryName("");
-                handleCloseCategory();
                 await fetchCategories();
             } else {
                 toast.error(data.message, toastOptions);
@@ -384,23 +377,43 @@ const Home = () => {
                             <Modal.Body>
                                 <Form>
                                     <Form.Group className="mb-3" controlId="formCategoryName">
-                                        <Form.Label>Category Name</Form.Label>
-                                        <Form.Control
-                                            name="categoryName"
-                                            type="text"
-                                            placeholder="Enter Category Name"
-                                            value={categoryName}
-                                            onChange={handleCategoryChange}
-                                        />
+                                        <Form.Label>Category Name <span className='text-danger'>*</span></Form.Label>
+                                        <div className="d-flex">
+                                            <Form.Control
+                                                name="categoryName"
+                                                type="text"
+                                                placeholder="Enter Category Name"
+                                                value={categoryName}
+                                                onChange={handleCategoryChange}
+                                            />
+                                            <Button variant="primary" onClick={handleCategorySubmit} className="ms-2">
+                                                Submit
+                                            </Button>
+                                        </div>
                                     </Form.Group>
                                 </Form>
+                                <div style={{maxHeight: '200px', overflowY: 'auto'}}>
+                                    <table className="table table-sm">
+                                        <thead>
+                                        <tr>
+                                            <th>#</th>
+                                            <th>Category Name</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        {categories.map((category, index) => (
+                                            <tr key={category._id}>
+                                                <td>{index + 1}</td>
+                                                <td>{category.name}</td>
+                                            </tr>
+                                        ))}
+                                        </tbody>
+                                    </table>
+                                </div>
                             </Modal.Body>
                             <Modal.Footer>
                                 <Button variant="secondary" onClick={handleCloseCategory}>
                                     Close
-                                </Button>
-                                <Button variant="primary" onClick={handleCategorySubmit}>
-                                    Submit
                                 </Button>
                             </Modal.Footer>
                         </Modal>

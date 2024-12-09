@@ -96,7 +96,6 @@ const SetAvatar = () => {
         }
 
         setImgURL(imgData);
-        // console.log(imgData);
         setLoading(false);
       }
 
@@ -245,7 +244,6 @@ const SetAvatar = () => {
                 <div className="container">
                   <div className="row">
                     {imgURL.map((image, index) => {
-                      console.log(image);
                       return (
                         <div key={index} className="col-lg-3 col-md-6 col-6">
                           <img
